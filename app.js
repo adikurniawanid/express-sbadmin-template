@@ -1,6 +1,10 @@
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const morgan = require("morgan");
+const session = require("express-session");
+const cookie = require("cookie-parser");
+const flash = require("connect-flash");
+const { body, validationResult, check } = require("express-validator");
 require("dotenv").config();
 
 const { PORT } = process.env;
@@ -10,6 +14,17 @@ app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.use(morgan("dev"));
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookie("secret"));
+app.use(
+  session({
+    cookie: { maxAge: 60000 },
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+app.use(flash());
 
 app.get("/", (req, res) => {
   res.render("index", {
@@ -106,10 +121,10 @@ app.use("/", (req, res) => {
   res.status(404);
   res.render("404", {
     layout: "layouts/dashboard",
-    title: "404 not found",
+    title: "404 Page Not Found",
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+  console.log(`app listening on port http://127.0.0.1:${PORT}`);
 });
